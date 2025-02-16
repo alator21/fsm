@@ -1,4 +1,4 @@
-type Transition<S extends string, E extends string, P, R> = {
+export type Transition<S extends string, E extends string, P, R> = {
 	from: S;
 	event: E;
 	to: S;
