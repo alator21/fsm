@@ -19,20 +19,35 @@ describe('fsm', () => {
 			finish: { cupsServed: number };
 		};
 
+
+		function createCoffeeTransition<T extends CoffeeEvent>(
+			fromState: CoffeeState,
+			event: T,
+			toState: CoffeeState,
+			action: (args: CoffeeParams[T]) => CoffeeResult[T],
+		) {
+			return createTransition<CoffeeState, T, CoffeeParams, CoffeeResult, T>(
+				fromState,
+				event,
+				toState,
+				action,
+			);
+		}
+
 		const coffeeTransitions = [
-			createTransition<CoffeeState, CoffeeEvent, CoffeeParams, CoffeeResult, 'insertCoin'>(
+			createCoffeeTransition(
 				'idle', 'insertCoin', 'idle',
 				(args) => ({balance: args.amount})
 			),
-			createTransition<CoffeeState, CoffeeEvent, CoffeeParams, CoffeeResult, 'selectCoffee'>(
+			createCoffeeTransition(
 				'idle', 'selectCoffee', 'brewing',
 				(args) => ({brewTime: args.type === 'espresso' ? 30 : 60})
 			),
-			createTransition<CoffeeState, CoffeeEvent, CoffeeParams, CoffeeResult, 'finish'>(
+			createCoffeeTransition(
 				'brewing', 'finish', 'dispensing',
 				() => ({cupsServed: 1})
 			),
-			createTransition<CoffeeState, CoffeeEvent, CoffeeParams, CoffeeResult, 'finish'>(
+			createCoffeeTransition(
 				'dispensing', 'finish', 'idle',
 				() => ({cupsServed: 0})
 			),
