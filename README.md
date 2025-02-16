@@ -3,10 +3,20 @@
 A simple implementation of a finite-state machine using typescript
 
 
+## Installation
+
+```shell
+#with npm
+npx jsr add @alator21/fsm
+
+#with bun
+bunx jsr add @alator21/fsm
+```
+
 ## Example
 
 ```typescript
-import {StateMachine} from "./fsm";
+import {createTransition, StateMachine} from "@alator21/fsm";
 
 type State = 'idle' | 'running' | 'paused';
 type Event = 'start' | 'pause' | 'resume' | 'stop';
