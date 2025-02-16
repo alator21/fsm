@@ -12,21 +12,26 @@ export class StateMachine<
 	R extends Record<E, any>,
 > {
 	private currentState: S;
-	private transitions: Transition<S, E, P[E], R[E]>[];
+	private transitions: {
+		[K in E]: Transition<S, K, P[K], R[K]>;
+	}[E][]; // Ensures event-specific typing
 
-	constructor(initialState: S, transitions: Transition<S, E, P[E], R[E]>[]) {
+	constructor(
+		initialState: S,
+		transitions: { [K in E]: Transition<S, K, P[K], R[K]> }[E][]
+	) {
 		this.currentState = initialState;
 		this.transitions = transitions;
 	}
 
 	dispatch<T extends E>(event: T, args: P[T]): R[T] {
 		const transition = this.transitions.find(
-			(t) => t.from === this.currentState && t.event === event,
+			(t) => t.from === this.currentState && t.event === event
 		) as Transition<S, T, P[T], R[T]> | undefined;
 
 		if (!transition) {
 			throw new Error(
-				`No transition found for event ${event} in state ${this.currentState}`,
+				`No transition found for event ${event} in state ${this.currentState}`
 			);
 		}
 
@@ -44,11 +49,12 @@ export function createTransition<
 	E extends string,
 	P extends Record<E, any>,
 	R extends Record<E, any>,
+	T extends E // Ensure strict event type inference
 >(
 	from: S,
-	event: E,
+	event: T,
 	to: S,
-	action: (args: P[E]) => R[E],
-): Transition<S, E, P[E], R[E]> {
+	action: (args: P[T]) => R[T]
+): Transition<S, T, P[T], R[T]> {
 	return {from, event, to, action};
 }
