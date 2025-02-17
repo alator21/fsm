@@ -39,6 +39,16 @@ export class StateMachine<
 		return transition.action(args);
 	}
 
+	can(event: E): boolean {
+		return this.transitions.find(
+			(t) => t.from === this.currentState && t.event === event
+		) !== undefined;
+	}
+
+	isFinal(): boolean {
+		return this.transitions.every((t) => (t.from !== this.currentState));
+	}
+
 	getState(): S {
 		return this.currentState;
 	}
